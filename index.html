@@ -34,13 +34,13 @@
         }
         #grid {
             display: grid;
-            grid-template-columns: repeat(5, 60px);
+            grid-template-columns: repeat(5, 70px); /* Aumentei de 60px para 70px */
             gap: 5px;
             margin-bottom: 20px;
         }
         .cell {
-            width: 60px;
-            height: 60px;
+            width: 70px; /* Aumentei de 60px para 70px */
+            height: 70px; /* Aumentei de 60px para 70px */
             background-color: #4B0082;
             display: flex;
             align-items: center;
@@ -55,7 +55,7 @@
         }
         .cell.treasure {
             background-color: #FFD700;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Reduzi de 1rem para 0.9rem */
             font-weight: 600;
             color: #000000;
         }
@@ -87,14 +87,14 @@
                 font-size: 0.9rem;
             }
             #grid {
-                grid-template-columns: repeat(5, 50px);
+                grid-template-columns: repeat(5, 60px); /* Aumentei de 50px para 60px */
             }
             .cell {
-                width: 50px;
-                height: 50px;
+                width: 60px; /* Aumentei de 50px para 60px */
+                height: 60px; /* Aumentei de 50px para 60px */
             }
             .cell.treasure {
-                font-size: 0.9rem;
+                font-size: 0.8rem; /* Reduzi de 0.9rem para 0.8rem */
             }
             #restart-btn {
                 font-size: 0.9rem;
@@ -110,7 +110,7 @@
     <div id="grid"></div>
     <button id="restart-btn">Novo Tesouro</button>
     <div id="feedback"></div>
-    <script>
+        <script>
         const gridSize = 5;
         let treasureRow, treasureCol;
         let tries = 0;
@@ -125,6 +125,7 @@
             document.getElementById('tries').textContent = `Tentativas: ${tries}`;
             document.getElementById('hint').textContent = 'Clique para começar!';
             document.getElementById('restart-btn').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none'; // Esconde a imagem ao reiniciar
             renderGrid();
         }
 
@@ -165,17 +166,19 @@
                 gameOver = true;
                 document.getElementById('hint').textContent = 'Parabéns! Você encontrou o tesouro!';
                 document.getElementById('restart-btn').style.display = 'inline-block';
+                feedbackElement.style.display = 'block'; // Imagem de "certo" fica até reiniciar
             } else {
                 cell.classList.add('clicked');
                 feedbackElement.innerHTML = '<img src="https://i.ibb.co/hJBYqfPw/IMG-1390.jpg" alt="Errado">';
                 const distance = Math.abs(row - treasureRow) + Math.abs(col - treasureCol);
                 document.getElementById('hint').textContent = distance <= 2 ? 'Quente!' : 'Frio!';
+                feedbackElement.style.display = 'block';
+                setTimeout(() => {
+                    if (!gameOver) { // Só esconde se o jogo não acabou
+                        feedbackElement.style.display = 'none';
+                    }
+                }, 3000); // 3 segundos
             }
-
-            feedbackElement.style.display = 'block';
-            setTimeout(() => {
-                feedbackElement.style.display = 'none';
-            }, 1500);
         }
 
         // Reinicia o jogo
