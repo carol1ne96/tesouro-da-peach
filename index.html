@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caça ao Tesouro da Peach</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000000;
+            font-family: 'Poppins', sans-serif;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        #tries {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        #hint {
+            font-size: 1rem;
+            background-color: #4B0082;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #4B0082;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            cursor: pointer;
+            border-radius: 5px;
+            user-select: none;
+        }
+        .cell.clicked {
+            background-color: #808080;
+        }
+        .cell.treasure {
+            background-color: #FFD700;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #000000;
+        }
+        #restart-btn {
+            background-color: #FF69B4;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        #feedback {
+            margin-top: 20px;
+            display: none;
+        }
+        #feedback img {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            #tries, #hint {
+                font-size: 0.9rem;
+            }
+            #grid {
+                grid-template-columns: repeat(5, 50px);
+            }
+            .cell {
+                width: 50px;
+                height: 50px;
+            }
+            .cell.treasure {
+                font-size: 0.9rem;
+            }
+            #restart-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Caça ao Tesouro da Peach</h1>
+    <div id="tries">Tentativas: 0</div>
+    <div id="hint">Clique para começar!</div>
+    <div id="grid"></div>
+    <button id="restart-btn">Novo Tesouro</button>
+    <div id="feedback"></div>
+    <script>
+        const gridSize = 5;
+        let treasureRow, treasureCol;
+        let tries = 0;
+        let gameOver = false;
+
+        // Inicializa o grid e o tesouro
+        function initializeGame() {
+            treasureRow = Math.floor(Math.random() * gridSize);
+            treasureCol = Math.floor(Math.random() * gridSize);
+            tries = 0;
+            gameOver = false;
+            document.getElementById('tries').textContent = `Tentativas: ${tries}`;
+            document.getElementById('hint').textContent = 'Clique para começar!';
+            document.getElementById('restart-btn').style.display = 'none';
+            renderGrid();
+        }
+
+        // Renderiza o grid
+        function renderGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', handleCellClick);
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        // Lida com o clique nas células
+        function handleCellClick(event) {
+            if (gameOver) return;
+
+            const cell = event.target;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            const feedbackElement = document.getElementById('feedback');
+
+            if (cell.classList.contains('clicked') || cell.classList.contains('treasure')) return;
+
+            tries++;
+            document.getElementById('tries').textContent = `Tentativas: ${tries}`;
+
+            if (row === treasureRow && col === treasureCol) {
+                cell.classList.add('treasure');
+                cell.textContent = 'Tesouro!';
+                feedbackElement.innerHTML = '<img src="https://i.ibb.co/wN5N3mRH/IMG-1389.jpg" alt="Certo">';
+                gameOver = true;
+                document.getElementById('hint').textContent = 'Parabéns! Você encontrou o tesouro!';
+                document.getElementById('restart-btn').style.display = 'inline-block';
+            } else {
+                cell.classList.add('clicked');
+                feedbackElement.innerHTML = '<img src="https://i.ibb.co/hJBYqfPw/IMG-1390.jpg" alt="Errado">';
+                const distance = Math.abs(row - treasureRow) + Math.abs(col - treasureCol);
+                document.getElementById('hint').textContent = distance <= 2 ? 'Quente!' : 'Frio!';
+            }
+
+            feedbackElement.style.display = 'block';
+            setTimeout(() => {
+                feedbackElement.style.display = 'none';
+            }, 1500);
+        }
+
+        // Reinicia o jogo
+        document.getElementById('restart-btn').addEventListener('click', initializeGame);
+
+        // Inicializa o jogo
+        initializeGame();
+    </script>
+</body>
+</html>
